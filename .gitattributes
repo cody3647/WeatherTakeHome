@@ -1,0 +1,2 @@
+2022.csv filter=lfs diff=lfs merge=lfs -text
+2022.csv.gz filter=lfs diff=lfs merge=lfs -text
