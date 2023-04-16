@@ -97,6 +97,7 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <outputFile>${project.basedir}/${project.artifactId}.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
