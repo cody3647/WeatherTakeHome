@@ -1,6 +1,8 @@
 package christopher.web;
 
 import christopher.datamanagement.StationRecordRetriever;
+import christopher.model.StationData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +20,14 @@ import java.util.List;
 public class StationServlet extends HttpServlet {
     final static public String NAME = "stations";
     final static public String PARAM_ID = "id";
+    final static public String PARAM_FORMAT = "format";
+    final static public String FORMAT_CSV = "csv";
+    final static public String FORMAT_CSV_TYPE = "text/plain";
+    final static public String FORMAT_JSON = "json";
+    final static public String FORMAT_JSON_TYPE = "application/json";
+    final static public String FORMAT_JSON_EMPTY_LIST = "[]";
     StationRecordRetriever stationRecordRetriever;
+    static final ObjectMapper mapper = new ObjectMapper();
 
     public StationServlet(StationRecordRetriever stationRecordRetriever) {
         this.stationRecordRetriever = stationRecordRetriever;
@@ -26,28 +35,63 @@ public class StationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("text/plain");
+
         String stationId = null;
 
-        if(req.getDispatcherType() == DispatcherType.REQUEST) {
+        if (req.getDispatcherType() == DispatcherType.REQUEST) {
             ArrayList<String> pathList = Api.getUrlPathList(req);
             stationId = pathList.get(0);
 
         }
-        else if(req.getDispatcherType() == DispatcherType.FORWARD) {
+        else if (req.getDispatcherType() == DispatcherType.FORWARD) {
             stationId = req.getParameter(PARAM_ID);
         }
 
-        if(stationId == null || stationId.isEmpty()) {
-            out.print("[]");
+        String format = req.getParameter(PARAM_FORMAT);
+
+        if (FORMAT_CSV.equalsIgnoreCase(format))
+            doGetCsvFormat(req, resp, stationId);
+        else
+            doGetJsonFormat(req, resp, stationId);
+
+
+    }
+
+    protected void doGetCsvFormat(HttpServletRequest req, HttpServletResponse resp, String stationId)
+            throws ServletException, IOException
+    {
+        resp.setContentType(FORMAT_CSV_TYPE);
+
+        PrintWriter out = resp.getWriter();
+        if (stationId == null || stationId.isEmpty()) {
+            resp.setContentLength(0);
             return;
         }
 
-        List<String> list = stationRecordRetriever.getStationRecords(stationId);
-        for(String line: list) {
-            out.print(line);
-            out.print("\n");
+        StringBuilder output = new StringBuilder();
+        List<String> list = stationRecordRetriever.getRawStationDataList(stationId);
+        for (String line : list) {
+            output.append(line).append('\n');
         }
+
+        resp.setContentLength(output.length());
+
+        out.print(output);
+    }
+
+    protected void doGetJsonFormat(HttpServletRequest req, HttpServletResponse resp, String stationId)
+            throws ServletException, IOException
+    {
+        resp.setContentType(FORMAT_JSON_TYPE);
+
+        PrintWriter out = resp.getWriter();
+        if (stationId == null || stationId.isEmpty()) {
+            resp.setContentLength(FORMAT_JSON_EMPTY_LIST.length());
+            out.print(FORMAT_JSON_EMPTY_LIST);
+            return;
+        }
+
+        List<StationData> stationDataList = stationRecordRetriever.getStationDataList(stationId);
+        mapper.writeValue(out, stationDataList);
     }
 }
