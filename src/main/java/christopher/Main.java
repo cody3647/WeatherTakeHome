@@ -2,6 +2,7 @@ package christopher;
 
 import christopher.datamanagement.FileStationRecordRetriever;
 import christopher.datamanagement.StationRecordRetriever;
+import christopher.datamanagement.StoredStationRecordRetriever;
 import christopher.web.WebServer;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
+    static public String USE_STORED = "--use-stored";
     public static void main(String[] args) {
         if (areArgsInvalid(args)) {
             System.err.println("Please enter a valid csv file.  java program <csv file>");
@@ -18,7 +20,12 @@ public class Main {
 
         try {
             Path csvFile = Path.of(args[0]);
-            stationRecordRetriever = new FileStationRecordRetriever();
+
+            if(args.length > 1 && args[1].equals(USE_STORED))
+                stationRecordRetriever = new StoredStationRecordRetriever();
+            else
+                stationRecordRetriever = new FileStationRecordRetriever();
+
             stationRecordRetriever.loadCsvFile(csvFile);
 
         }
