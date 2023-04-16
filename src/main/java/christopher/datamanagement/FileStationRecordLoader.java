@@ -35,6 +35,7 @@ class FileStationRecordLoader {
     public FileStationRecordLoader(Path baseStorageDir, Path csvFilePath) {
         filesMap = new HashMap<>();
         this.csvFilePath = csvFilePath;
+        this.storageDir = FileUtils.getCsvStorageDir(baseStorageDir, csvFilePath);
     }
 
     void load() throws IOException {
