@@ -69,7 +69,7 @@ class FileStationRecordLoader {
         // Read the lines from the csv file into a parallel stream and group them in a concurrent map
         // with the station id filename as the keys and a list of csv string records as the values.
         try (Stream<String> csvLineStream = Files.lines(csvFile)) {
-            tempStorageMap = csvLineStream.collect(
+            tempStorageMap = csvLineStream.parallel().collect(
                     Collectors.groupingByConcurrent(FileStationRecordRetriever::getFileNameOfStation,
                                                     Collectors.toList()));
         }
