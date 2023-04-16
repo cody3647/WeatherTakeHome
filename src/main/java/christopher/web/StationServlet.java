@@ -40,7 +40,8 @@ public class StationServlet extends HttpServlet {
 
         if (req.getDispatcherType() == DispatcherType.REQUEST) {
             ArrayList<String> pathList = Api.getUrlPathList(req);
-            stationId = pathList.get(0);
+            if(pathList.size() > 0)
+                stationId = pathList.get(0);
 
         }
         else if (req.getDispatcherType() == DispatcherType.FORWARD) {

@@ -28,7 +28,8 @@ public class Api {
 
         // Skip the first element, if there is path info it starts with a '/'
         // and the first element will be empty string
-        pathList.addAll(Arrays.asList(pathPieces).subList(1, pathPieces.length));
+        if(pathPieces.length > 1)
+            pathList.addAll(Arrays.asList(pathPieces).subList(1, pathPieces.length));
 
         return pathList;
     }
