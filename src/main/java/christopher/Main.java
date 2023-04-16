@@ -2,6 +2,7 @@ package christopher;
 
 import christopher.datamanagement.FileStationRecordRetriever;
 import christopher.datamanagement.StationRecordRetriever;
+import christopher.web.WebServer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,9 +14,11 @@ public class Main {
             System.err.println("Please enter a valid csv file.  java program <csv file>");
             return;
         }
+        StationRecordRetriever stationRecordRetriever = null;
+
         try {
             Path csvFile = Path.of(args[0]);
-            StationRecordRetriever stationRecordRetriever = new FileStationRecordRetriever();
+            stationRecordRetriever = new FileStationRecordRetriever();
             stationRecordRetriever.loadCsvFile(csvFile);
 
         }
@@ -23,7 +26,18 @@ public class Main {
             System.err.println("Error loading csv file: " + e.getMessage());
             return;
         }
+
+        try {
+            WebServer server = new WebServer(stationRecordRetriever);
+            server.start();
+        }
+        catch (Exception e) {
+            System.err.println("The server encountered an exception");
+            e.printStackTrace();
+        }
     }
+
+
 
     /**
      * Checks that the args passed to main are valid or not.
