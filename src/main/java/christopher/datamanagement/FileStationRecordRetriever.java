@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class FileStationRecordRetriever implements StationRecordRetriever {
@@ -37,7 +38,8 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
         Path filePath = filesMap.get(filename);
 
         try (Stream<String> lines = Files.lines(filePath)) {
-            return lines.filter(line -> line.startsWith(stationId)).map(StationData::new).toList();
+            return lines.filter(line -> line.startsWith(stationId)).map(StationData::createStationDataFromCsvRecord).filter(
+                    Objects::nonNull).toList();
         }
     }
 

@@ -28,19 +28,17 @@ public class StationData {
      *     <li>S-FLAG = 1 character Source Flag
      *     <li>OBS-TIME = 4-character time of observation in hour-minute format (i.e. 0700 =7:00 am)</li>
      * </ol>
-     * @param csvRecord
+     * @param csvRecord String csv record
+     * @return StationData of the csv record
      */
-    public StationData(String csvRecord) {
+    static public StationData createStationDataFromCsvRecord(String csvRecord) {
         String[] csvRecordArray = csvRecord.split(",", 8);
 
-        id = csvRecordArray[0];
-        date = csvRecordArray[1];
-        element = csvRecordArray[2];
-        data = csvRecordArray[3];
-        mFlag = csvRecordArray[4];
-        qFlag = csvRecordArray[5];
-        sFlag = csvRecordArray[6];
-        obsTime = csvRecordArray[7];
+        if(csvRecordArray.length != 8)
+            return null;
+
+        return new StationData(csvRecordArray[0], csvRecordArray[1], csvRecordArray[2], csvRecordArray[3],
+                               csvRecordArray[4], csvRecordArray[5], csvRecordArray[6], csvRecordArray[7]);
     }
 
     public StationData(String id, String date, String element, String data, String mFlag, String qFlag,
