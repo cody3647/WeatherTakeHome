@@ -1,5 +1,7 @@
 package christopher.datamanagement;
 
+import christopher.model.StationData;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,11 +61,29 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
      * @throws IOException
      */
     @Override
-    public List<String> getStationRecords(String stationId) throws IOException {
+    public List<StationData> getStationDataList(String stationId) throws IOException {
         String filename = FileStationRecordRetriever.getFileNameOfStation(stationId);
         filename = removeExtension(filename);
 
         Path filePath = filesMap.get(filename);
+
+        try (Stream<String> lines = Files.lines(filePath)) {
+            return lines.filter(line -> line.startsWith(stationId)).map(StationData::new).toList();
+        }
+    }
+
+    /**
+     * @param stationId String of the station ID whose records we want
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public List<String> getRawStationDataList(String stationId) throws IOException {
+        String filename = FileStationRecordRetriever.getFileNameOfStation(stationId);
+        filename = removeExtension(filename);
+
+        Path filePath = filesMap.get(filename);
+
         try (Stream<String> lines = Files.lines(filePath)) {
             return lines.filter(line -> line.startsWith(stationId)).toList();
         }
