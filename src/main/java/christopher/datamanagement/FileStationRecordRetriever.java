@@ -69,7 +69,8 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
     public void loadCsvFile(Path csvFilePath) throws IOException {
         long start = System.currentTimeMillis();
 
-        FileStationRecordLoader stationRecordLoader = new FileStationRecordLoader(csvFilePath);
+        FileStationRecordLoader stationRecordLoader = new FileStationRecordLoader(BASE_STORAGE_DIR, csvFilePath);
+        stationRecordLoader.load();
         filesMap = stationRecordLoader.getFilesMap();
 
         long finish = System.currentTimeMillis();
