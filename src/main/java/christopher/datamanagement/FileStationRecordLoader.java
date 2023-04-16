@@ -100,7 +100,7 @@ class FileStationRecordLoader {
                 Path storageSubDir = storageDir.resolve(Path.of(filename.substring(0, 1)));
                 Files.createDirectories(storageSubDir);
                 Path storageFile = storageSubDir.resolve(filename);
-                filesMap.put(FileStationRecordRetriever.removeExtension(filename), storageFile);
+                filesMap.put(FileUtils.removeExtension(filename), storageFile);
 
                 // Write the lines to the sub-file
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(storageFile, StandardOpenOption.CREATE,

@@ -25,7 +25,7 @@ public class StoredStationRecordRetriever extends FileStationRecordRetriever{
      */
     @Override
     public void loadCsvFile(Path csvFilePath) throws IOException {
-        Path storageDir = getCsvStorageDir(csvFilePath);
+        Path storageDir = FileUtils.getCsvStorageDir(BASE_STORAGE_DIR, csvFilePath);
 
         Files.walkFileTree(storageDir, new FileDirectoryFinderVisitor(filesMap));
     }
@@ -41,7 +41,7 @@ public class StoredStationRecordRetriever extends FileStationRecordRetriever{
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            filesMap.put(removeExtension(file), file);
+            filesMap.put(FileUtils.removeExtension(file), file);
 
             return FileVisitResult.CONTINUE;
         }
