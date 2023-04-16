@@ -19,7 +19,17 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
 
     Map<String, Path> filesMap;
 
-    public FileStationRecordRetriever() throws IOException {
+    public FileStationRecordRetriever() {
+    }
+
+    /**
+     * Helper function to get the storage directory to be used for storing the records of the given CSV file.
+     * @param csvFilePath  Path of the CSV file
+     * @return Path of the storage directory
+     */
+    static public Path getCsvStorageDir(Path csvFilePath) {
+        return FileStationRecordRetriever.BASE_STORAGE_DIR.resolve(
+                FileStationRecordRetriever.removeExtension(csvFilePath));
     }
 
     /**

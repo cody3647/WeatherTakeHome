@@ -33,8 +33,7 @@ class FileStationRecordLoader {
     public FileStationRecordLoader(Path csvFilePath) throws IOException {
         filesMap = new HashMap<>();
 
-        Path storageDir = FileStationRecordRetriever.BASE_STORAGE_DIR.resolve(
-                FileStationRecordRetriever.removeExtension(csvFilePath));
+        Path storageDir = FileStationRecordRetriever.getCsvStorageDir(csvFilePath);
 
         clearStorageDir(storageDir);
         Main.printUsedMemory();
