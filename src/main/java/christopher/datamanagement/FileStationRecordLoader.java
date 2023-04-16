@@ -20,6 +20,8 @@ class FileStationRecordLoader {
      * Map of filenames without extensions to the Path of the file
      */
     private final HashMap<String, Path> filesMap;
+    private final Path csvFilePath;
+    private final Path storageDir;
 
     /**
      * Loads the csv file into the storage directory as multiple sub-files sorted by station ID.
@@ -30,14 +32,15 @@ class FileStationRecordLoader {
      * @param csvFilePath Path of the csv file to load
      * @throws IOException when there is an error reading the csv file or writing the sub-files.
      */
-    public FileStationRecordLoader(Path csvFilePath) throws IOException {
+    public FileStationRecordLoader(Path baseStorageDir, Path csvFilePath) {
         filesMap = new HashMap<>();
+        this.csvFilePath = csvFilePath;
+    }
 
-        Path storageDir = FileStationRecordRetriever.getCsvStorageDir(csvFilePath);
-
-        clearStorageDir(storageDir);
+    void load() throws IOException {
+        clearStorageDir();
         Main.printUsedMemory();
-        ConcurrentMap<String, List<String>> tempStorageMap = loadFileToMap(csvFilePath);
+        ConcurrentMap<String, List<String>> tempStorageMap = loadFileToMap();
         Main.printUsedMemory();
         writeSplitCsvFiles(storageDir, tempStorageMap);
         Main.printUsedMemory();
@@ -46,28 +49,27 @@ class FileStationRecordLoader {
     }
 
     /**
-     * Deletes the storage directory and files and subdirectories in the storage directory.
+     * Deletes the csv file storage directory and files and subdirectories in the storage directory.
      *
-     * @param storageDir Path of the storage directory to remove
      * @throws IOException if an error occurs while walking and deleting the files.
      */
-    public void clearStorageDir(Path storageDir) throws IOException {
-        Files.walkFileTree(storageDir, new FileDirectoryDeleterVisitor());
+    void clearStorageDir() throws IOException {
+        if(Files.exists(storageDir))
+            Files.walkFileTree(storageDir, new FileDirectoryDeleterVisitor());
     }
 
     /**
      * Loads all the lines in the csvFile into a map keyed by station ID filename.
      *
-     * @param csvFile Path of the csv file to load into the map
      * @return ConcurrentMap of station ID filename to list of csv records for stations that start with the filename
      * @throws IOException if an error occures while reading the file.
      */
-    private ConcurrentMap<String, List<String>> loadFileToMap(Path csvFile) throws IOException {
+    ConcurrentMap<String, List<String>> loadFileToMap() throws IOException {
         ConcurrentMap<String, List<String>> tempStorageMap;
 
         // Read the lines from the csv file into a parallel stream and group them in a concurrent map
         // with the station id filename as the keys and a list of csv string records as the values.
-        try (Stream<String> csvLineStream = Files.lines(csvFile)) {
+        try (Stream<String> csvLineStream = Files.lines(csvFilePath)) {
             tempStorageMap = csvLineStream.parallel().collect(
                     Collectors.groupingByConcurrent(FileStationRecordRetriever::getFileNameOfStation,
                                                     Collectors.toList()));
@@ -85,7 +87,7 @@ class FileStationRecordLoader {
      * @param storageMap ConcurrentMap of filenames to lists of lines to write.
      * @todo automatically determine if there are too many lines in a list and split the list into multiple files until it is small enough
      */
-    private void writeSplitCsvFiles(final Path storageDir, ConcurrentMap<String, List<String>> storageMap) {
+    void writeSplitCsvFiles(final Path storageDir, ConcurrentMap<String, List<String>> storageMap) {
         // Parallelize the stream
         storageMap.entrySet().stream().parallel().forEach(listEntry -> {
             String filename = listEntry.getKey();
