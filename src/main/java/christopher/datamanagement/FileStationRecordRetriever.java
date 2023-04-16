@@ -20,6 +20,9 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
             Map.of("ASN", 8, "CA0", 6, "CA1", 6, "CHM", 7, "US1", 8,
                    "USC", 8, "USR", 8, "USS", 8, "USW", 9);
 
+    /**
+     * Filename without extension => file path
+     */
     Map<String, Path> filesMap;
 
     public FileStationRecordRetriever() {
