@@ -3,10 +3,8 @@ package christopher.web;
 import christopher.Main;
 import christopher.datamanagement.StationRecordRetriever;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
@@ -47,15 +45,14 @@ public class WebServer {
     }
 
     void setupApiHandlers() {
-        contextHandler.addServlet(new ServletHolder(ApiServlet.NAME, new ApiServlet()), "/api/*");
-        contextHandler.addServlet(
-                new ServletHolder(StationServlet.NAME, new StationServlet(stationRecordRetriever)),
-                "/api/station/*");
+        contextHandler.addServlet(new ServletHolder(ApiServlet.NAME, new ApiServlet()), "/" + Api.ENTRYPOINT + "/*");
+        contextHandler.addServlet(new ServletHolder(StationServlet.NAME, new StationServlet(stationRecordRetriever)),
+                                  "/" + Api.ENTRYPOINT + "/" + Api.STATIONS + "/*");
     }
 
     String getStaticFileDirectory() throws URISyntaxException {
         URL staticFile = Main.class.getClassLoader().getResource("christopher/site-root/index.html");
-        if(staticFile == null) {
+        if (staticFile == null) {
             throw new RuntimeException("Unable to find static resource directory");
         }
 

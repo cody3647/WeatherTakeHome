@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Servlet to handle the stations api queries.
+ */
 public class StationServlet extends HttpServlet {
-    final static public String NAME = "station";
+    final static public String NAME = "stations";
+    final static public String PARAM_ID = "id";
     StationRecordRetriever stationRecordRetriever;
 
     public StationServlet(StationRecordRetriever stationRecordRetriever) {
@@ -28,16 +31,12 @@ public class StationServlet extends HttpServlet {
         String stationId = null;
 
         if(req.getDispatcherType() == DispatcherType.REQUEST) {
-            String path = req.getPathInfo();
-            if(path != null) {
-                String[] pathPieces = path.split("/");
+            ArrayList<String> pathList = Api.getUrlPathList(req);
+            stationId = pathList.get(0);
 
-                if(pathPieces.length > 0)
-                    stationId = pathPieces[1];
-            }
         }
         else if(req.getDispatcherType() == DispatcherType.FORWARD) {
-            stationId = req.getParameter("id");
+            stationId = req.getParameter(PARAM_ID);
         }
 
         if(stationId == null || stationId.isEmpty()) {
