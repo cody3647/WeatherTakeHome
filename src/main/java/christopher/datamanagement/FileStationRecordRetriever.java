@@ -88,7 +88,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
      * @param stationId String of the station ID
      * @return String filename where the station's data entries are located.
      */
-    static public String getFileNameOfStation(String stationId) {
+    static String getFileNameOfStation(String stationId) {
         String firstThree = stationId.substring(0, 3).toUpperCase();
         if (substringLengthsStationFiles.containsKey(firstThree))
             return stationId.substring(0, substringLengthsStationFiles.get(firstThree)).toUpperCase() + ".csv";
