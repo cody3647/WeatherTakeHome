@@ -23,6 +23,15 @@ class FileUtilsTest {
     }
 
     @Test
+    void removeExtensionStringMissingExtension() {
+        assertDoesNotThrow(() -> FileUtils.removeExtension("test"));
+
+        String testFilename = "test";
+        testFilename = FileUtils.removeExtension(testFilename);
+        assertEquals("test", testFilename, "String should not have been changed: " + testFilename);
+    }
+
+    @Test
     void removeExtensionPath() {
         Path testPath = Path.of("test.file.csv");
         String testFilename = FileUtils.removeExtension(testPath);

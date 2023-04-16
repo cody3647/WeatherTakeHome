@@ -31,6 +31,9 @@ public class FileUtils {
      */
     static String removeExtension(String filename) {
         int extStart = filename.lastIndexOf('.');
+        if(extStart == -1)
+            return filename;
+
         return filename.substring(0, extStart);
     }
 }
