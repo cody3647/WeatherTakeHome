@@ -83,15 +83,9 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
      */
     @Override
     public void loadCsvFile(Path csvFilePath) throws IOException {
-        long start = System.currentTimeMillis();
-
         FileStationRecordLoader stationRecordLoader = new FileStationRecordLoader(BASE_STORAGE_DIR, csvFilePath);
         stationRecordLoader.load();
         filesMap = stationRecordLoader.getFilesMap();
-
-        long finish = System.currentTimeMillis();
-
-        System.out.println("Time to load and split csv file: " + ((finish - start) / 1000.0));
 
         System.gc();
     }

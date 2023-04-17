@@ -1,5 +1,8 @@
 package christopher.datamanagement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -10,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StoredStationRecordRetriever extends FileStationRecordRetriever{
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(StoredStationRecordRetriever.class);
 
     public StoredStationRecordRetriever() {
         super();
@@ -28,6 +33,7 @@ public class StoredStationRecordRetriever extends FileStationRecordRetriever{
         Path storageDir = FileUtils.getCsvStorageDir(BASE_STORAGE_DIR, csvFilePath);
 
         Files.walkFileTree(storageDir, new FileDirectoryFinderVisitor(filesMap));
+        LOGGER.info("Found {} sub-files from previous loading of {}", filesMap.size(), csvFilePath);
     }
 
     /**

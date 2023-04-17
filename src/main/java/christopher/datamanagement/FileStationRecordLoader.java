@@ -1,6 +1,7 @@
 package christopher.datamanagement;
 
-import christopher.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,6 +20,10 @@ class FileStationRecordLoader {
     private final HashMap<String, Path> filesMap;
     private final Path csvFilePath;
     private final Path storageDir;
+    private long maxUsedMemory;
+
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(FileStationRecordLoader.class);
 
     /**
      * Loads the csv file into the storage directory as multiple sub-files sorted by station ID.
@@ -41,10 +46,14 @@ class FileStationRecordLoader {
      * @throws IOException when there is an error reading the csv file or writing the sub-files.
      */
     void load() throws IOException {
+        long start = System.currentTimeMillis();
         clearStorageDir();
-        Main.printUsedMemory();
         loadFile();
         System.gc();
+        long finish = System.currentTimeMillis();
+        LOGGER.info("{} broken into {} sub-files in {} seconds", csvFilePath, filesMap.size(),
+                    (finish - start) / 1000.0);
+        LOGGER.info("Max memory used while loading {}: {}", csvFilePath, maxUsedMemory);
     }
 
     /**
@@ -65,6 +74,7 @@ class FileStationRecordLoader {
     void loadFile() throws IOException {
         ConcurrentMap<String, List<String>> tempStorageMap;
 
+        LOGGER.info("Loading {}", csvFilePath);
         /*
         Read 2,000,000 million lines in at a time to keep memory usage low
         Then take a parallel stream from the list and group them in a concurrent map with the station id filename as
@@ -83,7 +93,7 @@ class FileStationRecordLoader {
                     tempStorageMap = processLines(lines);
                     lines = new LinkedList<>();
                     writeSplitCsvFiles(storageDir, tempStorageMap);
-                    Main.printUsedMemory();
+                    trackMaxMemory();
                     System.gc();
                     count = 0;
                 }
@@ -92,7 +102,7 @@ class FileStationRecordLoader {
             // Anything left in the last lines
             tempStorageMap = processLines(lines);
             lines = null;
-            Main.printUsedMemory();
+            trackMaxMemory();
             System.gc();
             writeSplitCsvFiles(storageDir, tempStorageMap);
         }
@@ -123,6 +133,7 @@ class FileStationRecordLoader {
                 Files.createDirectories(storageSubDir);
                 Path storageFile = storageSubDir.resolve(filename);
                 filesMap.put(FileUtils.removeExtension(filename), storageFile);
+                LOGGER.trace("Writing {} lines to {}", lines.size(), storageFile);
 
                 // Write the lines to the sub-file
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(storageFile, StandardOpenOption.CREATE,
@@ -144,6 +155,12 @@ class FileStationRecordLoader {
 
     public Map<String, Path> getFilesMap() {
         return Collections.unmodifiableMap(filesMap);
+    }
+
+    private void trackMaxMemory() {
+        Runtime runtime = Runtime.getRuntime();
+        long current = runtime.totalMemory() - runtime.freeMemory();
+        maxUsedMemory = maxUsedMemory < current ? current : maxUsedMemory;
     }
 
     /**

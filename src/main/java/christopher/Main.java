@@ -4,6 +4,8 @@ import christopher.datamanagement.FileStationRecordRetriever;
 import christopher.datamanagement.StationRecordRetriever;
 import christopher.datamanagement.StoredStationRecordRetriever;
 import christopher.web.WebServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,9 +13,11 @@ import java.nio.file.Path;
 
 public class Main {
     static public final String USE_STORED = "--use-stored";
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
         if (areArgsInvalid(args)) {
-            System.err.println("Please enter a valid csv file.  java program <csv file>");
+            System.err.println("Please enter a valid csv file.  java <programName> <csv file>");
             return;
         }
         StationRecordRetriever stationRecordRetriever;
@@ -30,7 +34,7 @@ public class Main {
 
         }
         catch (IOException e) {
-            System.err.println("Error loading csv file: " + e.getMessage());
+            LOGGER.error("Error loading csv file", e);
             return;
         }
 
@@ -39,8 +43,7 @@ public class Main {
             server.start();
         }
         catch (Exception e) {
-            System.err.println("The server encountered an exception");
-            e.printStackTrace();
+            LOGGER.error("The server encountered an exception", e);
         }
     }
 
@@ -60,12 +63,6 @@ public class Main {
         Path filePath = Path.of(args[0]);
 
         return !(Files.isRegularFile(filePath) && Files.isReadable(filePath));
-    }
-
-
-    static public void printUsedMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        System.out.println("Memory: " + (runtime.totalMemory() - runtime.freeMemory()));
     }
 
 }
