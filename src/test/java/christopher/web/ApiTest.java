@@ -129,6 +129,40 @@ public class ApiTest {
     }
 
     @Test
+    void apiStationsIdMissingQuery() throws IOException, InterruptedException {
+        String url = "http://localhost:8080/api?query=stations";
+        HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(url)).build();
+
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, httpResponse.statusCode());
+
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+        assertEquals(QueryResults.Type.STATION_DATA, queryResults.getType());
+
+        List<StationData> stationDataList = queryResults.getResults();
+        assertEquals(0, stationDataList.size());
+    }
+
+    @Test
+    void apiStationsIdMissingUrl() throws IOException, InterruptedException {
+        String url = "http://localhost:8080/api/stations/";
+        HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(url)).build();
+
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, httpResponse.statusCode());
+
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+        assertEquals(QueryResults.Type.STATION_DATA, queryResults.getType());
+
+        List<StationData> stationDataList = queryResults.getResults();
+        assertEquals(0, stationDataList.size());
+    }
+
+    @Test
     void uiPage() throws IOException, InterruptedException {
         String url = "http://localhost:8080";
         HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(url)).build();

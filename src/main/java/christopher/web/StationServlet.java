@@ -26,7 +26,6 @@ public class StationServlet extends HttpServlet {
     final static public String FORMAT_CSV_TYPE = "text/plain";
     final static public String FORMAT_JSON = "json";
     final static public String FORMAT_JSON_TYPE = "application/json";
-    final static public String FORMAT_JSON_EMPTY_LIST = "[]";
     StationRecordRetriever stationRecordRetriever;
     static final ObjectMapper mapper = new ObjectMapper();
 
@@ -87,13 +86,11 @@ public class StationServlet extends HttpServlet {
         resp.setContentType(FORMAT_JSON_TYPE);
 
         PrintWriter out = resp.getWriter();
-        if (stationId == null || stationId.isEmpty()) {
-            resp.setContentLength(FORMAT_JSON_EMPTY_LIST.length());
-            out.print(FORMAT_JSON_EMPTY_LIST);
-            return;
-        }
-
-        List<StationData> stationDataList = stationRecordRetriever.getStationDataList(stationId);
+        List<StationData> stationDataList;
+        if (stationId == null || stationId.isEmpty())
+            stationDataList = List.of();
+        else
+            stationDataList = stationRecordRetriever.getStationDataList(stationId);
 
         mapper.writeValue(out, new QueryResults<StationData>(QueryResults.Type.STATION_DATA, stationDataList));
     }
