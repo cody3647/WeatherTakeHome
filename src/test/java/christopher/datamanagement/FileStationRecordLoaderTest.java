@@ -69,35 +69,17 @@ class FileStationRecordLoaderTest{
     void clearStorageDirNotExists() throws IOException {
         Path clearStorageTestPath = tempStorageDir.resolve("clearTest");
         FileStationRecordLoader loader = new FileStationRecordLoader(tempStorageDir, Path.of("clearTest.csv"));
-        assertDoesNotThrow(loader::clearStorageDir, "Throws an exception when directory " +
-                                                    "does not exist.");
+        assertDoesNotThrow(loader::clearStorageDir, "Throws an exception when directory " + "does not exist.");
     }
 
-
-    @DisplayName("LoadFileToMap: Correct number of partitions and lines found")
+    @DisplayName("LoadFile And WriteSplitCsvFiles: Correct number of files/subdirectories created and lines " +
+                 "written")
     @Test
-    void loadFileToMap() throws IOException {
-        FileStationRecordLoader loader = new FileStationRecordLoader(tempStorageDir, testCsvFile);
-        ConcurrentMap<String, List<String>> stationMap = loader.loadFileToMap();
-
-        assertEquals(4, stationMap.size(), "Incorrect number of stations found.");
-        for(Map.Entry<String, List<String>> entry: stationMap.entrySet()) {
-            List<String> list = entry.getValue();
-            String fileNoExt = FileUtils.removeExtension(entry.getKey());
-
-            csvLinesTest(list, fileNoExt);
-        }
-    }
-
-    @DisplayName("WriteSplitCsvFiles: Correct number of files/subdirectories created and lines written")
-    @Test
-    void writeSplitCsvFiles() throws IOException {
+    void loadFileAndWriteSplitCsvFiles() throws IOException {
         Path fileStorageDir = tempStorageDir.resolve("test");
 
         FileStationRecordLoader loader = new FileStationRecordLoader(tempStorageDir, testCsvFile);
-        ConcurrentMap<String, List<String>> stationMap = loader.loadFileToMap();
-
-        loader.writeSplitCsvFiles(fileStorageDir, stationMap);
+        loader.loadFile();
 
         FileCounter fileCounter = new FileCounter();
         Files.walkFileTree(fileStorageDir, fileCounter);
@@ -153,10 +135,9 @@ class FileStationRecordLoaderTest{
 
         assertTrue(first.toUpperCase().startsWith(fileNoExt),
                    "First line in wrong list: " + fileNoExt + " != " + first);
-        assertTrue(last.toUpperCase().startsWith(fileNoExt),
-                   "Last line in wrong list: " + fileNoExt + " != " + last);
+        assertTrue(last.toUpperCase().startsWith(fileNoExt), "Last line in wrong list: " + fileNoExt + " != " + last);
 
-        assertFalse(first.substring(0,12).equalsIgnoreCase(last.substring(0,12)),
+        assertFalse(first.substring(0, 12).equalsIgnoreCase(last.substring(0, 12)),
                     "First and last lines should have different station IDs");
     }
 

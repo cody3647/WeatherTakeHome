@@ -2,17 +2,14 @@ package christopher.datamanagement;
 
 import christopher.Main;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class FileStationRecordLoader {
 
@@ -42,11 +39,7 @@ class FileStationRecordLoader {
     void load() throws IOException {
         clearStorageDir();
         Main.printUsedMemory();
-        ConcurrentMap<String, List<String>> tempStorageMap = loadFileToMap();
-        Main.printUsedMemory();
-        writeSplitCsvFiles(storageDir, tempStorageMap);
-        Main.printUsedMemory();
-        tempStorageMap = null;
+        loadFile();
         System.gc();
     }
 
@@ -63,22 +56,48 @@ class FileStationRecordLoader {
     /**
      * Loads all the lines in the csvFile into a map keyed by station ID filename.
      *
-     * @return ConcurrentMap of station ID filename to list of csv records for stations that start with the filename
      * @throws IOException if an error occures while reading the file.
      */
-    ConcurrentMap<String, List<String>> loadFileToMap() throws IOException {
+    void loadFile() throws IOException {
         ConcurrentMap<String, List<String>> tempStorageMap;
 
-        // Read the lines from the csv file into a parallel stream and group them in a concurrent map
-        // with the station id filename as the keys and a list of csv string records as the values.
-        try (Stream<String> csvLineStream = Files.lines(csvFilePath)) {
-            tempStorageMap = csvLineStream.parallel().collect(
-                    Collectors.groupingByConcurrent(FileStationRecordRetriever::getFileNameOfStation,
-                                                    Collectors.toList()));
+        /*
+        Read 2,000,000 million lines in at a time to keep memory usage low
+        Then take a parallel stream from the list and group them in a concurrent map with the station id filename as
+        the keys and a list of csv string records as the values.
+         */
+        try (BufferedReader bufferedReader = Files.newBufferedReader(csvFilePath)) {
+            String line;
+            int count = 0;
+            LinkedList<String> lines = new LinkedList<>();
+
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line);
+                count++;
+
+                if (count == 2_000_000) {
+                    tempStorageMap = processLines(lines);
+                    lines = new LinkedList<>();
+                    writeSplitCsvFiles(storageDir, tempStorageMap);
+                    Main.printUsedMemory();
+                    System.gc();
+                    count = 0;
+                }
+            }
+
+            // Anything left in the last lines
+            tempStorageMap = processLines(lines);
+            lines = null;
+            Main.printUsedMemory();
+            System.gc();
+            writeSplitCsvFiles(storageDir, tempStorageMap);
         }
+    }
 
-
-        return tempStorageMap;
+    ConcurrentMap<String, List<String>> processLines(LinkedList<String> lines) {
+        return lines.parallelStream().collect(
+                Collectors.groupingByConcurrent(FileStationRecordRetriever::getFileNameOfStation,
+                                                Collectors.toList()));
     }
 
     /**
@@ -94,8 +113,6 @@ class FileStationRecordLoader {
         storageMap.entrySet().stream().parallel().forEach(listEntry -> {
             String filename = listEntry.getKey();
             List<String> lines = listEntry.getValue();
-            // Sorting will allow bailing early from files later on
-            Collections.sort(lines);
 
             try {
                 // create subdirectory path storage/original-csv-file/firstChar/sub-csv-file.csv
@@ -107,7 +124,8 @@ class FileStationRecordLoader {
                 // Write the lines to the sub-file
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(storageFile, StandardOpenOption.CREATE,
                                                                              StandardOpenOption.WRITE,
-                                                                             StandardOpenOption.TRUNCATE_EXISTING)) {
+                                                                             StandardOpenOption.APPEND))
+                {
                     for (String line : lines) {
                         bufferedWriter.write(line);
                         bufferedWriter.write("\n");
