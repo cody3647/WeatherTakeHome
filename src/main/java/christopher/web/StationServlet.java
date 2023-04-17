@@ -1,6 +1,7 @@
 package christopher.web;
 
 import christopher.datamanagement.StationRecordRetriever;
+import christopher.model.QueryResults;
 import christopher.model.StationData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.DispatcherType;
@@ -93,6 +94,7 @@ public class StationServlet extends HttpServlet {
         }
 
         List<StationData> stationDataList = stationRecordRetriever.getStationDataList(stationId);
-        mapper.writeValue(out, stationDataList);
+
+        mapper.writeValue(out, new QueryResults<StationData>(QueryResults.Type.STATION_DATA, stationDataList));
     }
 }

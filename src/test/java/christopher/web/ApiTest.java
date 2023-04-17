@@ -2,6 +2,7 @@ package christopher.web;
 
 import christopher.datamanagement.FileStationRecordRetriever;
 import christopher.datamanagement.FileTest;
+import christopher.model.QueryResults;
 import christopher.model.StationData;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,9 +59,10 @@ public class ApiTest {
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, httpResponse.statusCode());
-        List<StationData> stationDataList =
-                objectMapper.readValue(httpResponse.body(), new TypeReference<List<StationData>>() {
-                });
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+
+        List<StationData> stationDataList = queryResults.getResults();
 
         assertEquals(730, stationDataList.size());
         for (StationData stationData : stationDataList) {
@@ -79,9 +81,11 @@ public class ApiTest {
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, httpResponse.statusCode());
-        List<StationData> stationDataList =
-                objectMapper.readValue(httpResponse.body(), new TypeReference<List<StationData>>() {
-                });
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+        assertEquals(QueryResults.Type.STATION_DATA, queryResults.getType());
+
+        List<StationData> stationDataList = queryResults.getResults();
 
         assertEquals(730, stationDataList.size());
         for (StationData stationData : stationDataList) {
@@ -98,7 +102,13 @@ public class ApiTest {
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, httpResponse.statusCode());
-        assertEquals("[]", httpResponse.body());
+
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+        assertEquals(QueryResults.Type.STATION_DATA, queryResults.getType());
+
+        List<StationData> stationDataList = queryResults.getResults();
+        assertEquals(0, stationDataList.size());
     }
 
     @Test
@@ -109,7 +119,13 @@ public class ApiTest {
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, httpResponse.statusCode());
-        assertEquals("[]", httpResponse.body());
+
+        QueryResults<StationData> queryResults =
+                objectMapper.readValue(httpResponse.body(), new TypeReference<QueryResults<StationData>>() {});
+        assertEquals(QueryResults.Type.STATION_DATA, queryResults.getType());
+
+        List<StationData> stationDataList = queryResults.getResults();
+        assertEquals(0, stationDataList.size());
     }
 
     @Test
