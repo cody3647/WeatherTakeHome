@@ -10,13 +10,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    static public String USE_STORED = "--use-stored";
+    static public final String USE_STORED = "--use-stored";
     public static void main(String[] args) {
         if (areArgsInvalid(args)) {
             System.err.println("Please enter a valid csv file.  java program <csv file>");
             return;
         }
-        StationRecordRetriever stationRecordRetriever = null;
+        StationRecordRetriever stationRecordRetriever;
 
         try {
             Path csvFile = Path.of(args[0]);
