@@ -5,12 +5,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +20,6 @@ class FileStationRecordRetrieverTest {
     @BeforeAll
     static void setUp() throws IOException {
         testCsvFile = FileTest.buildTestFile(tempStorageDir);
-
     }
 
     @AfterAll
