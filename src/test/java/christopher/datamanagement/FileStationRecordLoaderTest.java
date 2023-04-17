@@ -58,7 +58,7 @@ class FileStationRecordLoaderTest{
 
     @DisplayName("Clear Storage Directory: deletes all files and subdirectories")
     @Test
-    void clearStorageDirExsists() throws IOException {
+    void clearStorageDirExists() throws IOException {
         // Create subdirectories and files
         Path clearStorageTestPath = tempStorageDir.resolve("clearTest");
         Files.createDirectories(clearStorageTestPath);
