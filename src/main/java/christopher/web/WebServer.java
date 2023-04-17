@@ -42,7 +42,11 @@ public class WebServer {
     public void start() throws Exception {
 
         server.start();
-        server.join();
+    //    server.join();
+    }
+
+    public void stop() throws Exception {
+        server.stop();
     }
 
     /**

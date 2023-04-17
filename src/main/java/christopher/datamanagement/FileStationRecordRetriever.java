@@ -44,8 +44,9 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
             return List.of();
 
         try (Stream<String> lines = Files.lines(filePath)) {
-            return lines.filter(line -> line.startsWith(stationId)).map(StationData::createStationDataFromCsvRecord).filter(
-                    Objects::nonNull).toList();
+            return lines.filter(line -> stationId.regionMatches(true, 0, line, 0, stationId.length()))
+                        .map(StationData::createStationDataFromCsvRecord)
+                        .filter(Objects::nonNull).toList();
         }
     }
 
