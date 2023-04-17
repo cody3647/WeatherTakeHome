@@ -45,6 +45,12 @@ class FileStationRecordRetrieverTest {
         for(StationData stationData: stationDataList)
             assertEquals(stationId, stationData.getId(), "Wrong station data returned");
 
+        // Check partial matches, these should not return anything
+        stationId = "us1b000022";
+        stationDataList = retriever.getStationDataList(stationId);
+        assertEquals(0, stationDataList.size(), "List should be empty, should not return partial matches");
+
+
         stationId = "none";
         String finalStationId = stationId;
         assertDoesNotThrow(() -> retriever.getStationDataList(finalStationId));

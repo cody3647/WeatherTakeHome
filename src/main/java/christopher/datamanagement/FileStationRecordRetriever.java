@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FileStationRecordRetriever implements StationRecordRetriever {
@@ -30,7 +31,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
 
     /**
      * @param stationId String of the station ID whose records we want
-     * @return
+     * @return List of StationData that match the station ID
      * @throws IOException
      */
     @Override
@@ -43,16 +44,17 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
         if(filePath == null)
             return List.of();
 
+        LineFilter lineFilter = new LineFilter(stationId);
+
         try (Stream<String> lines = Files.lines(filePath)) {
-            return lines.filter(line -> stationId.regionMatches(true, 0, line, 0, stationId.length()))
-                        .map(StationData::createStationDataFromCsvRecord)
+            return lines.filter(lineFilter).map(StationData::createStationDataFromCsvRecord)
                         .filter(Objects::nonNull).toList();
         }
     }
 
     /**
      * @param stationId String of the station ID whose records we want
-     * @return
+     * @return List of String records that match the station ID
      * @throws IOException
      */
     @Override
@@ -65,8 +67,10 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
         if(filePath == null)
             return List.of();
 
+        LineFilter lineFilter = new LineFilter(stationId);
+
         try (Stream<String> lines = Files.lines(filePath)) {
-            return lines.filter(line -> line.startsWith(stationId)).toList();
+            return lines.filter(lineFilter).toList();
         }
     }
 
@@ -103,6 +107,24 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
         if (substringLengthsStationFiles.containsKey(firstThree))
             return stationId.substring(0, substringLengthsStationFiles.get(firstThree)).toUpperCase() + ".csv";
         return firstThree + ".csv";
+    }
+
+    /**
+     * Predicate for filtering lines that match the station id.
+     */
+    static class LineFilter implements Predicate<String> {
+        String stationId;
+
+        public LineFilter(String stationId) {
+            this.stationId = stationId;
+        }
+
+        @Override
+        public boolean test(String line) {
+            // Station IDs must be 11 characters long, region matches returns false if toffset (0) + len (11)
+            // is greater than the length of stationId
+            return stationId.regionMatches(true, 0, line, 0, 11);
+        }
     }
 
 }
