@@ -13,8 +13,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class FileTest {
-    static Path buildTestFile(Path tempStorageDir) throws IOException {
+    public static Path buildTestFile(Path tempStorageDir) throws IOException {
         Path testCsvFile;
+        FileStationRecordRetriever.BASE_STORAGE_DIR = tempStorageDir;
+
         testCsvFile = tempStorageDir.resolve("test.csv");
 
         String[] stations = {"aaa00000000", "aaa11111111", "aab00000000", "aab11111111","us1a0000111", "us1a0000222",
@@ -33,8 +35,8 @@ public class FileTest {
 
         for (String station : stations) {
             for (LocalDate date : dates) {
-                String element1 = station + "," + date.format(dateFormatter) + "," + element[0];
-                String element2 = station + "," + date.format(dateFormatter) + "," + element[1];
+                String element1 = station + "," + date.format(dateFormatter) + "," + element[0] + ",";
+                String element2 = station + "," + date.format(dateFormatter) + "," + element[1] + ",";
                 String remaining = date.getDayOfYear() + ",X,Y,Z,1300";
                 stationDataLines.add(element1 + remaining);
                 stationDataLines.add(element2 + remaining);
@@ -47,7 +49,8 @@ public class FileTest {
         return testCsvFile;
     }
 
-    static void deleteTestFiles(Path tempStorageDir, Path testCsvFile) throws IOException {
+    public static void deleteTestFiles(Path tempStorageDir, Path testCsvFile) throws IOException {
+        FileStationRecordRetriever.BASE_STORAGE_DIR = Path.of("storage");
         Files.delete(testCsvFile);
         new FileStationRecordLoader(tempStorageDir, testCsvFile).clearStorageDir();
     }
