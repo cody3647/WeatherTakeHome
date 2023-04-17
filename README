@@ -1,0 +1,28 @@
+Weather Take Home
+
+Use maven to package the program.
+java -jar WeatherTakeHome.jar <csvFileName>
+Add --use-store to use previously loaded csv file, the csv file name is still required
+as the first argument to find the correct storage directory for the previously loaded file.
+
+CSV File:
+CSV file must be a Global Historical Climatology Network "by-year" csv file and follow
+the format in the ghcn-readme-by_year.txt file.
+
+Server is available on port 8080.
+
+API Usage:
+    Station Data:
+        /api?query=stations&id=<stationId> OR /api/stations/<stationId>
+        Result will be JSON object with a type STATION_DATA and a results array with the
+        results of the query.
+
+Docker File:
+A multi-stage docker file has been provided to build and package the program. It exposes
+the containers port 8080.  The 2022.csv file must be in the same directory and it will be
+copied over to the container during the build process.  Running the container starts
+the program.
+
+UI:
+A basic UI is available at the <host:8080>/ OR <host:8080>/index.html.  The UI allows
+searching for a station's data and displaying the results in a simple table.
