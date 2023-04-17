@@ -18,7 +18,7 @@ public class WebServer {
     final ServletContextHandler contextHandler;
 
     /**
-     * Setup the Jetty Server
+     * Set up the Jetty Server
      * @param stationRecordRetriever StationRecordRetriever that has the data for the api
      * @throws Exception when the Server encounters an error
      */

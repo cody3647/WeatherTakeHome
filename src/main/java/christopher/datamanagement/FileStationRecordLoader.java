@@ -28,7 +28,6 @@ class FileStationRecordLoader {
      *
      * @param baseStorageDir Path to create storage directory under
      * @param csvFilePath Path of the csv file to load
-     * @throws IOException when there is an error reading the csv file or writing the sub-files.
      */
     public FileStationRecordLoader(Path baseStorageDir, Path csvFilePath) {
         filesMap = new HashMap<>();
@@ -36,6 +35,11 @@ class FileStationRecordLoader {
         this.storageDir = FileUtils.getCsvStorageDir(baseStorageDir, csvFilePath);
     }
 
+    /**
+     * Clear the storage directory that will be used for this file.  Then load the file and split it into smaller files
+     * in the storage directory
+     * @throws IOException when there is an error reading the csv file or writing the sub-files.
+     */
     void load() throws IOException {
         clearStorageDir();
         Main.printUsedMemory();
@@ -56,7 +60,7 @@ class FileStationRecordLoader {
     /**
      * Loads all the lines in the csvFile into a map keyed by station ID filename.
      *
-     * @throws IOException if an error occures while reading the file.
+     * @throws IOException if an error occurs while reading the file.
      */
     void loadFile() throws IOException {
         ConcurrentMap<String, List<String>> tempStorageMap;
@@ -106,7 +110,6 @@ class FileStationRecordLoader {
      *
      * @param storageDir Path of the storage directory to write files to.
      * @param storageMap ConcurrentMap of filenames to lists of lines to write.
-     * @todo automatically determine if there are too many lines in a list and split the list into multiple files until it is small enough
      */
     void writeSplitCsvFiles(final Path storageDir, ConcurrentMap<String, List<String>> storageMap) {
         // Parallelize the stream

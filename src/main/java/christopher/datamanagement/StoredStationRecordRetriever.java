@@ -21,7 +21,7 @@ public class StoredStationRecordRetriever extends FileStationRecordRetriever{
      * Does not parse the csv file and therefore no guarantee is made that the split
      * csv files are the same as the given csv file.
      * @param csvFilePath Path of the csv file to load
-     * @throws IOException
+     * @throws IOException if there is an error finding the files in the storage directory
      */
     @Override
     public void loadCsvFile(Path csvFilePath) throws IOException {

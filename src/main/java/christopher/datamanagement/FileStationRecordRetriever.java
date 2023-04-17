@@ -32,7 +32,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
     /**
      * @param stationId String of the station ID whose records we want
      * @return List of StationData that match the station ID
-     * @throws IOException
+     * @throws IOException if there is an error reading the file
      */
     @Override
     public List<StationData> getStationDataList(String stationId) throws IOException {
@@ -55,7 +55,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
     /**
      * @param stationId String of the station ID whose records we want
      * @return List of String records that match the station ID
-     * @throws IOException
+     * @throws IOException if there is an error reading the file
      */
     @Override
     public List<String> getRawStationDataList(String stationId) throws IOException {
@@ -97,7 +97,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
     }
 
     /**
-     * Helper funtion to get the name of the station file from a station ID
+     * Helper function to get the name of the station file from a station ID
      *
      * @param stationId String of the station ID
      * @return String filename where the station's data entries are located.
