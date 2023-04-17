@@ -40,6 +40,9 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
 
         Path filePath = filesMap.get(filename);
 
+        if(filePath == null)
+            return List.of();
+
         try (Stream<String> lines = Files.lines(filePath)) {
             return lines.filter(line -> line.startsWith(stationId)).map(StationData::createStationDataFromCsvRecord).filter(
                     Objects::nonNull).toList();
@@ -57,6 +60,9 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
         filename = FileUtils.removeExtension(filename);
 
         Path filePath = filesMap.get(filename);
+
+        if(filePath == null)
+            return List.of();
 
         try (Stream<String> lines = Files.lines(filePath)) {
             return lines.filter(line -> line.startsWith(stationId)).toList();
