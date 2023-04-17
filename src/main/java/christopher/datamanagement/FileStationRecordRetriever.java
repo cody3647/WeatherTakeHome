@@ -17,7 +17,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
      * Stations that start with these letters have more data entries and need to be split up more.
      * Map stores the number of characters to use for the split csv file names.
      */
-    static Map<String, Integer> substringLengthsStationFiles =
+    static final Map<String, Integer> substringLengthsStationFiles =
             Map.of("ASN", 8, "CA0", 6, "CA1", 6, "CHM", 7, "US1", 8,
                    "USC", 8, "USR", 8, "USS", 8, "USW", 9);
 
@@ -113,7 +113,7 @@ public class FileStationRecordRetriever implements StationRecordRetriever {
      * Predicate for filtering lines that match the station id.
      */
     static class LineFilter implements Predicate<String> {
-        String stationId;
+        final String stationId;
 
         public LineFilter(String stationId) {
             this.stationId = stationId;

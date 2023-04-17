@@ -21,7 +21,6 @@ public class ApiServlet extends HttpServlet {
 
         if(query.equals(Api.STATIONS)) {
             getServletContext().getNamedDispatcher(StationServlet.NAME).forward(req, resp);
-            return;
         }
     }
 }

@@ -13,9 +13,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class WebServer {
-    Server server;
-    StationRecordRetriever stationRecordRetriever;
-    ServletContextHandler contextHandler;
+    final Server server;
+    final StationRecordRetriever stationRecordRetriever;
+    final ServletContextHandler contextHandler;
 
     /**
      * Setup the Jetty Server

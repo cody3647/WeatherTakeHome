@@ -34,7 +34,7 @@ public class StoredStationRecordRetriever extends FileStationRecordRetriever{
      * A SimpleFileVisitor for deleting all files and subdirectories.
      */
     static private class FileDirectoryFinderVisitor extends SimpleFileVisitor<Path> {
-        Map<String, Path> filesMap;
+        final Map<String, Path> filesMap;
         public FileDirectoryFinderVisitor(Map<String, Path> filesMap) {
             this.filesMap = filesMap;
         }

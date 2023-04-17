@@ -26,7 +26,7 @@ public class StationServlet extends HttpServlet {
     final static public String FORMAT_CSV_TYPE = "text/plain";
     final static public String FORMAT_JSON = "json";
     final static public String FORMAT_JSON_TYPE = "application/json";
-    StationRecordRetriever stationRecordRetriever;
+    final StationRecordRetriever stationRecordRetriever;
     static final ObjectMapper mapper = new ObjectMapper();
 
     public StationServlet(StationRecordRetriever stationRecordRetriever) {

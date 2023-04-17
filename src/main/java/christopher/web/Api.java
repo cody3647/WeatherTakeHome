@@ -9,8 +9,8 @@ import java.util.Arrays;
  * Helper class for Api handlers
  */
 public class Api {
-    static public String ENTRYPOINT = "api";
-    static public String STATIONS = "stations";
+    static public final String ENTRYPOINT = "api";
+    static public final String STATIONS = "stations";
 
     /**
      * Helper function to get a list of the parts of pathInfo from HttpServletRequest
