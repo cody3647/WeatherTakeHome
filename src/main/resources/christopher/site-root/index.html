@@ -3,8 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-Hello World
+    <h2>Weather Station Data</h2>
+        <div class="form">
+            <div>
+                <label for="stationId">Station ID</label>
+                <input type="text" name="stationId" id="stationId">
+            </div>
+            <button id="stationQueryButton" type="submit">Search</button>
+        </div>
+    <div id="results">
+
+    </div>
+    <script>
+        document.getElementById("stationQueryButton").addEventListener("click", queryStationData);
+
+        function queryStationData() {
+            let query = document.getElementById("stationId").value;
+            let url = "/api/stations/" + query;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(loadStationData)
+        }
+
+        function loadStationData(json) {
+            let results = json.results;
+            let resultsDiv = document.getElementById("results");
+
+            if(results.length === 0) {
+                resultsDiv.removeChild(resultsDiv.firstChild);
+                let noResults = document.createElement("p");
+                resultsDiv.appendChild(noResults);
+                noResults.innerText = "No station data found";
+                return;
+            }
+
+            let table = document.createElement("table");
+            table.classList.add("results");
+            let tr = document.createElement("tr");
+            table.appendChild(tr);
+
+
+            let headers = Object.keys(results[0]);
+            headers.forEach(header => {
+                let th = document.createElement("th");
+                tr.appendChild(th);
+                th.innerText = header;
+            });
+
+            results.forEach(row => {
+               let tr = document.createElement("tr");
+               table.appendChild(tr);
+               Object.values(row).forEach(value => {
+                  let td = document.createElement("td");
+                  tr.appendChild(td);
+                  td.innerText = value;
+               });
+            });
+            resultsDiv.removeChild(resultsDiv.firstChild);
+            resultsDiv.appendChild(table);
+        }
+    </script>
 </body>
 </html>

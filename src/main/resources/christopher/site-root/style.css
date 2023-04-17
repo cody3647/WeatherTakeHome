@@ -1,0 +1,9 @@
+div#results {
+    margin-top: 1em;
+}
+
+table.results, td, th {
+    border-collapse: collapse;
+    border: 1px solid black;
+    padding: 0.25em;
+}
