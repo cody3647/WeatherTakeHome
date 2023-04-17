@@ -26,9 +26,10 @@ class FileStationRecordLoader {
     /**
      * Loads the csv file into the storage directory as multiple sub-files sorted by station ID.
      * <p>
-     * A subdirectory under {@link FileStationRecordRetriever#BASE_STORAGE_DIR} is created with the name of the csv file
+     * A subdirectory under baseStorageDir is created with the name of the csv file
      * to store the sub-files/directories in.
      *
+     * @param baseStorageDir Path to create storage directory under
      * @param csvFilePath Path of the csv file to load
      * @throws IOException when there is an error reading the csv file or writing the sub-files.
      */
